@@ -1,23 +1,14 @@
+import cors from 'cors'
 import express from 'express'
-import path from 'node:path'
 import { chatFlow, clearSession } from './ai_flow'
 
-const isProd = process.env.NODE_ENV === 'production'
 const port = Number(process.env.PORT ?? 3000)
 
 const app = express()
+
+app.use(cors({ origin: process.env.FRONTEND_URL ?? true }))
+
 app.use(express.json())
-if (isProd) {
-  const frontendDir = path.resolve('dist')
-  const indexHtmlPath = path.join(frontendDir, 'index.html')
-
-  const serveIndexHtml: express.RequestHandler = (_req, res) => {
-    res.sendFile(indexHtmlPath)
-  }
-
-  app.use(express.static(frontendDir))
-  app.use(serveIndexHtml)
-}
 
 app.post('/api/chat', async (req, res) => {
   const { sessionId, message, system } = req.body ?? {}
