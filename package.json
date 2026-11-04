@@ -1,0 +1,17 @@
+{
+  "name": "chat-server",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env index.ts",
+    "start": "tsx --env-file=.env index.ts"
+  },
+  "dependencies": {
+    "@genkit-ai/google-genai": "^1.44.0",
+    "express": "^5.3.0",
+    "genkit": "^1.44.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "tsx": "^4.23.15"
+  }
+}
