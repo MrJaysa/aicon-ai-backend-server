@@ -4,7 +4,7 @@ import { chatFlow } from './ai_flow.js'
 
 const app = express()
 
-const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:5173', 'https://aicon-ai-backend-server-sjio.vercel.app'].filter(
+const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:5173', 'https://aicon-jade.vercel.app'].filter(
   (o): o is string => Boolean(o),
 )
 
