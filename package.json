@@ -3,7 +3,7 @@
   "type": "module",
    "scripts": {
     "dev": "tsx watch --env-file=.env index.ts",
-    "start": "tsx index.ts"
+    "start": "NODE_ENV=production tsx index.ts"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.44.0",

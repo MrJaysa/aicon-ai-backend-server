@@ -1,19 +1,20 @@
 import cors from 'cors'
 import express from 'express'
-import { chatFlow, clearSession } from './ai_flow'
-
-const port = Number(process.env.PORT ?? 3000)
+import { chatFlow } from './ai_flow.js'
 
 const app = express()
 
 app.use(cors({ origin: process.env.FRONTEND_URL ?? true }))
-
-app.use(express.json())
+app.use(express.json({ limit: '1mb' }))
 
 app.post('/api/chat', async (req, res) => {
-  const { sessionId, message, system } = req.body ?? {}
-  if (typeof sessionId !== 'string' || typeof message !== 'string' || !message.trim()) {
-    res.status(400).json({ error: 'sessionId and message are required' })
+  const { message, history = [], system } = req.body ?? {}
+  if (typeof message !== 'string' || !message.trim()) {
+    res.status(400).json({ error: 'message is required' })
+    return
+  }
+  if (!Array.isArray(history) || history.length > 50) {
+    res.status(400).json({ error: 'history must be an array of at most 50 items' })
     return
   }
   if (system !== undefined && (typeof system !== 'string' || system.length > 1000)) {
@@ -27,7 +28,7 @@ app.post('/api/chat', async (req, res) => {
   res.flushHeaders()
 
   try {
-    const { stream, output } = chatFlow.stream({ sessionId, message, system })
+    const { stream, output } = chatFlow.stream({ message, history, system })
     for await (const chunk of stream) {
       res.write(`data: ${JSON.stringify(chunk)}\n\n`)
     }
@@ -41,9 +42,9 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
-app.delete('/api/chat/:sessionId', (req, res) => {
-  clearSession(req.params.sessionId)
-  res.status(204).end()
-})
+if (process.env.NODE_ENV !== 'production') {
+  const port = Number(process.env.PORT ?? 3000)
+  app.listen(port, () => console.log(`http://localhost:${port}`))
+}
 
-app.listen(port, () => console.log(`http://localhost:${port}`))
+export default app
