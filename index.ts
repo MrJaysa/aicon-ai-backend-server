@@ -4,7 +4,11 @@ import { chatFlow } from './ai_flow.js'
 
 const app = express()
 
-app.use(cors({ origin: process.env.FRONTEND_URL ?? true }))
+const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:5173'].filter(
+  (o): o is string => Boolean(o),
+)
+
+app.use(cors({ origin: allowedOrigins }))
 app.use(express.json({ limit: '1mb' }))
 
 app.post('/api/chat', async (req, res) => {
